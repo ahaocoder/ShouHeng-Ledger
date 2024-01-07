@@ -1,5 +1,6 @@
 package com.example.ledger.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +20,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavController
 import com.example.ledger.R
 import java.text.SimpleDateFormat
@@ -90,14 +93,13 @@ fun HomePage(navController: NavController) {
 @Composable
 fun LedgerInputSection() {
     // 表单字段
-    var state by remember { mutableStateOf(false) }
+    var isIncomeState by remember { mutableStateOf(false) }
     var dayTimestampState by remember { mutableStateOf(0L) }
     var timeTimestampState by remember { mutableStateOf(0L) }
     var categoryState by remember { mutableStateOf("") }
     var tagState by remember { mutableStateOf("") }
     var descriptionState by remember { mutableStateOf("") }
     var amountState by remember { mutableStateOf("") }
-    var isExpenseState by remember { mutableStateOf("") }
 
     // 获取软键盘控制器
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -152,11 +154,17 @@ fun LedgerInputSection() {
 
             OutlinedTextField(
                 value = amountState,
-                onValueChange = { amountState = it },
+                onValueChange = { newAmount ->
+                    // 检查输入是否为数字
+                    if (newAmount.isEmpty() || newAmount.toDoubleOrNull() != null) {
+                        amountState = newAmount
+                    }
+                },
                 label = { Text("金额") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
@@ -180,18 +188,26 @@ fun LedgerInputSection() {
                 horizontalArrangement = Arrangement.Center
             ) {
                 RadioButton(
-                    selected = state,
-                    onClick = { state = !state },
+                    selected = isIncomeState,
+                    onClick = { isIncomeState = !isIncomeState },
                 )
                 Text(
                     text = "收入",
                     Modifier
                         .align(Alignment.CenterVertically)
-                        .clickable { state = !state }
+                        .clickable { isIncomeState = !isIncomeState }
                 )
             }
             Button(
-                onClick = {},
+                onClick = {
+                    Log.d("Debug", "isIncomeState: $isIncomeState")
+                    Log.d("Debug", "dayTimestampState: $dayTimestampState")
+                    Log.d("Debug", "timeTimestampState: $timeTimestampState")
+                    Log.d("Debug", "categoryState: $categoryState")
+                    Log.d("Debug", "tagState: $tagState")
+                    Log.d("Debug", "descriptionState: $descriptionState")
+                    Log.d("Debug", "amountState: $amountState")
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
@@ -219,9 +235,6 @@ fun LedgerInputSection() {
 private fun MyDatePicker(onDateSelected: (Long) -> Unit) {
     var selectedDate by remember { mutableStateOf<Date?>(Date()) }
     var isDatePickerVisible by remember { mutableStateOf(false) }
-
-    // 获取软键盘控制器
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     Button(
         onClick = {

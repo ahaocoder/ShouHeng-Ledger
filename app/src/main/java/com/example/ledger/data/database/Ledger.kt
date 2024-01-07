@@ -21,8 +21,8 @@ data class Ledger(
     @ColumnInfo(name = "amount")
     val amount: Double,      // 金额
 
-    @ColumnInfo(name = "isExpense")
-    val isExpense: Boolean,   // 支出与收入的状态标识
+    @ColumnInfo(name = "isIncome")
+    val isIncome: Boolean,   // 支出与收入的状态标识
 
     @ColumnInfo(name = "dayTimestamp")
     val dayTimestamp: Long,   // 天时间戳，当日0点的时间戳
