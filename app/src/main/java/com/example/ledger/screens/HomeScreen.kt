@@ -1,6 +1,8 @@
 package com.example.ledger.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,9 +15,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.ledger.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,7 +87,7 @@ fun HomePage(navController: NavController) {
 @Composable
 fun LedgerInputSection() {
     // 表单字段
-    var dayTimestampState by remember { mutableStateOf("") }
+    var dayTimestampState by remember { mutableStateOf(0L) }
     var timeTimestampState by remember { mutableStateOf("") }
     var categoryState by remember { mutableStateOf("") }
     var tagState by remember { mutableStateOf("") }
@@ -98,6 +103,10 @@ fun LedgerInputSection() {
             .padding(16.dp),
 //        verticalArrangement = Arrangement.spacedBy(50.dp)
     ) {
+        MyDatePicker { selectedTimestamp ->
+            // 更新选择的日期时间戳
+            dayTimestampState = selectedTimestamp
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -156,5 +165,79 @@ fun LedgerInputSection() {
                     .padding(vertical = 8.dp)
             )
         }
+
+        if (dayTimestampState == 0L) {
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            dayTimestampState = calendar.timeInMillis
+        }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MyDatePicker(onDateSelected: (Long) -> Unit) {
+    var selectedDate by remember { mutableStateOf<Date?>(Date()) }
+    var isDatePickerVisible by remember { mutableStateOf(false) }
+
+    // 获取软键盘控制器
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Button(
+        onClick = {
+            isDatePickerVisible = true
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+    ) {
+        Text(selectedDate?.toFormattedString() ?: "Select Date")
+    }
+
+    // Date Picker Dialog
+    if (isDatePickerVisible) {
+        val datePickerState = rememberDatePickerState()
+        DatePickerDialog(
+            onDismissRequest = {
+                isDatePickerVisible = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        selectedDate = Date(datePickerState.selectedDateMillis ?: 0)
+                        isDatePickerVisible = false
+
+                        // 调用回调函数，传递选择的日期的时间戳
+                        selectedDate?.let { date ->
+                            onDateSelected(date.time)
+                        }
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        isDatePickerVisible = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
+
+@Composable
+private fun Date.toFormattedString(): String {
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    return formatter.format(this)
 }
