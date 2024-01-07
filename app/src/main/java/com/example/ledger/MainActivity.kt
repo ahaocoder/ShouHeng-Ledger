@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -80,7 +79,7 @@ fun ProfilePage(navController: NavController){
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
         Text(text = "数据页", Modifier.padding(top = 80.dp))
         Button(modifier = Modifier.padding(top = 80.dp), onClick = {
-            navController.navigate("home")
+            navController.popBackStack()
         }) {
             Text(text = "返回主页")
         }
@@ -92,7 +91,7 @@ fun SettingPage(navController: NavController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
         Text(text = "设置页", Modifier.padding(top = 80.dp))
         Button(modifier = Modifier.padding(top = 80.dp), onClick = {
-            navController.navigate("home")
+            navController.popBackStack()
         }) {
             Text(text = "返回主页")
         }
