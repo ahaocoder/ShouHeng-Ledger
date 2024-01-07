@@ -19,16 +19,39 @@ import com.example.ledger.R
 @Composable
 fun HomePage(navController: NavController) {
     TopAppBar(
-        title = { /* Title goes here */ },
+        title = { "目前没看到有啥用" },
         navigationIcon = {
             // 左上角按钮
             IconButton(
                 onClick = {
                     // 处理按钮点击事件，例如触发导航
+                    navController.navigate("profile")
                 },
                 modifier = Modifier.padding(12.dp)
             ) {
                 // 这里使用的是一个 SVG 图标，你可以替换为你自己的 SVG 图标
+                // 这里使用的是一个 SVG 图标，根据系统暗亮模式切换颜色
+                val iconPainter = painterResource(R.drawable.assessment_24)
+
+                Image(
+                    painter = iconPainter,
+                    contentDescription = "profile",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(MaterialTheme.shapes.small)
+                )
+            }
+        },
+        actions = {
+            // 右上角的其他操作按钮可以放在这里
+            // 左上角按钮
+            IconButton(
+                onClick = {
+                    // 处理按钮点击事件，例如触发导航
+                    navController.navigate("setting")
+                },
+                modifier = Modifier.padding(12.dp)
+            ) {
                 // 这里使用的是一个 SVG 图标，根据系统暗亮模式切换颜色
                 val iconPainter = painterResource(R.drawable.settings_24)
 
@@ -41,28 +64,9 @@ fun HomePage(navController: NavController) {
                 )
             }
         },
-        actions = {
-            // 右上角的其他操作按钮可以放在这里
-        },
     )
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-
-        Text(text = "记账主页", Modifier.padding(top = 80.dp))
-
-        Button(modifier = Modifier.padding(top = 80.dp), onClick = {
-            navController.navigate("setting")
-        }) {
-            Text(text = "跳转到设置")
-
-        }
-
-        Button(modifier = Modifier.padding(top = 80.dp), onClick = {
-            navController.navigate("profile")
-        }) {
-            Text(text = "跳转到详情")
-
-        }
+        Text(text = "账本主页", Modifier.padding(top = 80.dp))
     }
-
 }
