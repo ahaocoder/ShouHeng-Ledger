@@ -3,14 +3,24 @@ package com.example.ledger
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.ledger.ui.theme.LedgerTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +29,7 @@ class MainActivity : ComponentActivity() {
             LedgerTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Greeting("Android")
+                    MainPage()
                 }
             }
         }
@@ -27,17 +37,47 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MainPage(){
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login") { LoginPage(navController) }
+        composable("home") { HomePage(navController) }
+    }
+
+}
+
+@Composable
+fun LoginPage(navController: NavController) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+
+        Text(text = "登录页", Modifier.padding(top = 80.dp))
+
+        Button(modifier = Modifier.padding(top = 80.dp), onClick = {
+            navController.navigate("home")
+        }) {
+            Text(text = "跳转到home")
+
+        }
+
+    }
+}
+@Composable
+fun HomePage(navController: NavController) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+        Text(text = "主页", Modifier.padding(top = 80.dp))
+        Button(modifier = Modifier.padding(top = 80.dp), onClick = {
+            navController.popBackStack()
+        }) {
+            Text(text = "返回")
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     LedgerTheme {
-        Greeting("Android")
+        MainPage()
     }
 }
