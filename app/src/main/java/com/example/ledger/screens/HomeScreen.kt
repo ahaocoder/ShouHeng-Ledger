@@ -3,7 +3,9 @@ package com.example.ledger.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -14,8 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.ledger.R
@@ -87,8 +90,9 @@ fun HomePage(navController: NavController) {
 @Composable
 fun LedgerInputSection() {
     // 表单字段
+    var state by remember { mutableStateOf(false) }
     var dayTimestampState by remember { mutableStateOf(0L) }
-    var timeTimestampState by remember { mutableStateOf("") }
+    var timeTimestampState by remember { mutableStateOf(0L) }
     var categoryState by remember { mutableStateOf("") }
     var tagState by remember { mutableStateOf("") }
     var descriptionState by remember { mutableStateOf("") }
@@ -165,6 +169,38 @@ fun LedgerInputSection() {
                     .padding(vertical = 8.dp)
             )
         }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                RadioButton(
+                    selected = state,
+                    onClick = { state = !state },
+                )
+                Text(
+                    text = "收入",
+                    Modifier
+                        .align(Alignment.CenterVertically)
+                        .clickable { state = !state }
+                )
+            }
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .weight(1f)
+                    .padding(vertical = 8.dp)
+            ) {
+                Text("记他妈的")
+            }
+        }
 
         if (dayTimestampState == 0L) {
             val calendar = Calendar.getInstance().apply {
@@ -194,7 +230,7 @@ private fun MyDatePicker(onDateSelected: (Long) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
+            .padding(0.dp)
     ) {
         Text(selectedDate?.toFormattedString() ?: "Select Date")
     }
