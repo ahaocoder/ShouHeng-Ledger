@@ -1,16 +1,20 @@
 package com.example.ledger.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.ledger.R
@@ -66,7 +70,90 @@ fun HomePage(navController: NavController) {
         },
     )
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-        Text(text = "账本主页", Modifier.padding(top = 80.dp))
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 50.dp)
+    ) {
+        LedgerInputSection()
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun LedgerInputSection() {
+    // 表单字段
+    var categoryState by remember { mutableStateOf("") }
+    var tagState by remember { mutableStateOf("") }
+    var descriptionState by remember { mutableStateOf("") }
+    var amountState by remember { mutableStateOf("") }
+
+    // 获取软键盘控制器
+    val keyboardController = LocalSoftwareKeyboardController.current
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+//        verticalArrangement = Arrangement.spacedBy(50.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            OutlinedTextField(
+                value = categoryState,
+                onValueChange = { categoryState = it },
+                label = { Text("类目") },
+                singleLine = true,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = tagState,
+                onValueChange = { tagState = it },
+                label = { Text("标签") },
+                singleLine = true,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp)
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            OutlinedTextField(
+                value = descriptionState,
+                onValueChange = { descriptionState = it },
+                label = { Text("描述") },
+                singleLine = true,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = amountState,
+                onValueChange = { amountState = it },
+                label = { Text("金额") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        // 在这里执行输入完成后的操作
+                        keyboardController?.hide()
+                    }
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp)
+            )
+        }
     }
 }
