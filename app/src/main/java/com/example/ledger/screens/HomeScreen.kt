@@ -4,8 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -84,10 +82,13 @@ fun HomePage(navController: NavController) {
 @Composable
 fun LedgerInputSection() {
     // 表单字段
+    var dayTimestampState by remember { mutableStateOf("") }
+    var timeTimestampState by remember { mutableStateOf("") }
     var categoryState by remember { mutableStateOf("") }
     var tagState by remember { mutableStateOf("") }
     var descriptionState by remember { mutableStateOf("") }
     var amountState by remember { mutableStateOf("") }
+    var isExpenseState by remember { mutableStateOf("") }
 
     // 获取软键盘控制器
     val keyboardController = LocalSoftwareKeyboardController.current
