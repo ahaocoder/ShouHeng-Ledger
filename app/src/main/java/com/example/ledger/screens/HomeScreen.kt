@@ -1,9 +1,7 @@
 package com.example.ledger.screens
 
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,36 +20,77 @@ import androidx.navigation.NavController
 import com.example.ledger.R
 import com.example.ledger.data.database.Ledger
 import com.example.ledger.data.database.LedgerDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavController, db: LedgerDatabase) {
     TopAppBar(navController)
+
+    var scrollState = rememberScrollState()
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 50.dp)
+            .verticalScroll(scrollState)
     ) {
         LedgerInputSection(db)
+
+    }
+
+}
+
+
+@Composable
+private fun LedgerListItem(ledger: Ledger) {
+    Column(
+    ) {
+        ListItem(
+            headlineContent = { Text(ledger.category) },
+            supportingContent = { Text(ledger.tag) },
+            trailingContent = { if (ledger.isIncome) Text(ledger.amount.toString()) else Text("-" + ledger.amount.toString()) },
+        )
+        HorizontalDivider()
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun LedgerInputSection(db: LedgerDatabase) {
+private fun LedgerInputSection(db: LedgerDatabase) {
     // 表单字段
     var isIncomeState by remember { mutableStateOf(false) }
-    var dayTimestampState by remember { mutableStateOf(0L) }
+    var dayTimestampState by remember { mutableStateOf(getTodayTimeStamp()) }
     var timeTimestampState by remember { mutableStateOf(0L) }
     var categoryState by remember { mutableStateOf("") }
     var tagState by remember { mutableStateOf("") }
     var descriptionState by remember { mutableStateOf("") }
     var amountState by remember { mutableStateOf("") }
+
+    var ledgerListState by remember { mutableStateOf(emptyList<Ledger>()) }
+    LaunchedEffect(dayTimestampState) {
+        val newLedgerList = withContext(Dispatchers.IO) {
+            val ledgerDao = db.ledgerDao()
+            val resultList = ledgerDao.getLedgersByDay(dayTimestampState).toList()
+            resultList.firstOrNull() ?: emptyList()
+        }
+
+        ledgerListState = newLedgerList
+    }
+
+    // 获取数据库单例
+    val ledgerDao = db.ledgerDao()
+    val ledgerList by ledgerDao.getLedgersByDay(dayTimestampState).collectAsState(initial = listOf())
+
+    Log.e("日期组件在变", dayTimestampState.toString())
 
     // 获取软键盘控制器
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -152,14 +191,6 @@ fun LedgerInputSection(db: LedgerDatabase) {
             }
             Button(
                 onClick = {
-                    Log.d("Debug", "isIncomeState: $isIncomeState")
-                    Log.d("Debug", "dayTimestampState: $dayTimestampState")
-                    Log.d("Debug", "timeTimestampState: $timeTimestampState")
-                    Log.d("Debug", "categoryState: $categoryState")
-                    Log.d("Debug", "tagState: $tagState")
-                    Log.d("Debug", "descriptionState: $descriptionState")
-                    Log.d("Debug", "amountState: $amountState")
-
                     LedgerDatabase.launch {
                         try {
                             var ledger = Ledger(
@@ -189,16 +220,10 @@ fun LedgerInputSection(db: LedgerDatabase) {
                 Text("记他妈的")
             }
         }
+    }
 
-        if (dayTimestampState == 0L) {
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-            dayTimestampState = calendar.timeInMillis
-        }
+    ledgerList.forEach { ledger ->
+        LedgerListItem(ledger)
     }
 }
 
@@ -263,11 +288,24 @@ private fun Date.toFormattedString(): String {
     return formatter.format(this)
 }
 
+private fun getTodayTimeStamp(): Long {
+    // 获取今天的日期
+    val today = LocalDate.now()
+
+    // 使用 Asia/Shanghai 时区获取当前时间
+    val todayMidnight = ZonedDateTime.of(today.atStartOfDay(), ZoneOffset.UTC)
+
+    val timeStampStr = todayMidnight.toEpochSecond().toString() + "000"
+
+    // 获取今天 0 点的时间戳
+    return timeStampStr.toLong()
+}
+
 
 // 顶部按钮导航
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopAppBar(navController: NavController){
+private fun TopAppBar(navController: NavController) {
     TopAppBar(
         title = { "目前没看到有啥用" },
         navigationIcon = {
