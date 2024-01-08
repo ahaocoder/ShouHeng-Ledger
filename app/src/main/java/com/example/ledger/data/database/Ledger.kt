@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "ledger")
 data class Ledger(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    val id: Long? = 0L,
 
     @ColumnInfo(name = "category")
     val category: String,    // 存储大类，比如餐饮

@@ -8,7 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.ledger.data.database.LedgerDatabase
+import com.example.ledger.data.database.LedgerDatabase.Companion.getDatabase
 import com.example.ledger.ui.theme.LedgerTheme
 
 
@@ -19,7 +20,7 @@ class MainActivity : ComponentActivity() {
             LedgerTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    MainPage()
+                    MainPage(getDatabase(applicationContext))
                 }
             }
         }
@@ -27,14 +28,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainPage(){
-    Routes()
+fun MainPage(db: LedgerDatabase){
+    Routes(db)
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LedgerTheme {
-        Routes()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    LedgerTheme {
+//        Routes()
+//    }
+//}
