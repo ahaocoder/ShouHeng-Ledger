@@ -15,7 +15,7 @@ fun Routes(db: LedgerDatabase) {
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomePage(navController, db) }
-        composable("setting") { SettingPage(navController) }
+        composable("setting") { SettingPage(navController, db) }
         composable("profile") { ProfilePage(navController) }
     }
 }
