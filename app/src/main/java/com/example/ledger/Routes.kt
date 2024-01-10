@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ledger.data.database.LedgerDatabase
+import com.example.ledger.screens.AboutPage
 import com.example.ledger.screens.HomePage
 import com.example.ledger.screens.ProfilePage
 import com.example.ledger.screens.SettingPage
@@ -17,5 +18,6 @@ fun Routes(db: LedgerDatabase) {
         composable("home") { HomePage(navController, db) }
         composable("setting") { SettingPage(navController, db) }
         composable("profile") { ProfilePage(navController) }
+        composable("about") { AboutPage(navController) }
     }
 }

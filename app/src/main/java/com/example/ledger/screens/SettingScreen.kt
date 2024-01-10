@@ -59,7 +59,8 @@ fun SettingPage(navController: NavController, db: LedgerDatabase) {
         }
         Button(
             onClick = {
-                openInfoDialog = true
+//                openInfoDialog = true
+                navController.navigate("about")
             }
         ) {
             Text(text = "关于")
@@ -86,21 +87,21 @@ fun SettingPage(navController: NavController, db: LedgerDatabase) {
         )
     }
 
-    if (openInfoDialog) {
-        InfoDialog(
-            onDismissRequest = {
-                // 关闭弹窗
-                openInfoDialog = false
-            },
-            onConfirmClick = {
-                // 在这里执行删除数据的操作
-                // 这里需要根据你的实际需求处理
-                // 如果执行了删除数据的操作，可以在这里调用 navController.popBackStack()
-                // 来返回主页
-                openInfoDialog = false
-            }
-        )
-    }
+//    if (openInfoDialog) {
+//        InfoDialog(
+//            onDismissRequest = {
+//                // 关闭弹窗
+//                openInfoDialog = false
+//            },
+//            onConfirmClick = {
+//                // 在这里执行删除数据的操作
+//                // 这里需要根据你的实际需求处理
+//                // 如果执行了删除数据的操作，可以在这里调用 navController.popBackStack()
+//                // 来返回主页
+//                openInfoDialog = false
+//            }
+//        )
+//    }
 }
 
 
