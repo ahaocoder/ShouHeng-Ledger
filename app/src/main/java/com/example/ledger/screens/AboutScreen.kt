@@ -43,6 +43,7 @@ fun AboutPage(navController: NavController) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
         Text(
+            modifier = Modifier.padding(top = 80.dp),
             text = "Made By ShouHeng and \uD83D\uDC93.",
             fontSize = 18.sp
         )
@@ -50,7 +51,7 @@ fun AboutPage(navController: NavController) {
         Button(modifier = Modifier.padding(top = 80.dp), onClick = {
             navController.popBackStack()
         }) {
-            Text(text = "返回主页")
+            Text(text = "返回上页")
         }
     }
 }
