@@ -1,5 +1,6 @@
 package com.example.ledger.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,7 +21,7 @@ import com.example.ledger.data.database.LedgerDatabase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfilePage(navController: NavController) {
+fun ProfilePage(navController: NavController, db: LedgerDatabase) {
     TopAppBar(
         title = { "目前没看到有啥用" },
         navigationIcon = {
@@ -45,7 +48,19 @@ fun ProfilePage(navController: NavController) {
         })
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-        Text(text = "数据页", Modifier.padding(top = 80.dp))
+        val ledgerDao = db.ledgerDao()
+        val ledgerList by ledgerDao.getAllLedgers().collectAsState(initial = listOf())
+        // 分离出true和false的项
+        val trueLedgers = ledgerList.filter { it.isIncome }
+        val falseLedgers = ledgerList.filter { !it.isIncome }
+
+        // 求和
+        val trueSum = trueLedgers.sumByDouble { it.amount }
+        val falseSum = falseLedgers.sumByDouble { it.amount }
+
+        // 输出结果
+        Text(text = "消费的金额总和: $falseSum 元", Modifier.padding(top = 80.dp))
+        Text(text = "收入的金额总和: $trueSum 元")
         Button(modifier = Modifier.padding(top = 80.dp), onClick = {
             navController.popBackStack()
         }) {
